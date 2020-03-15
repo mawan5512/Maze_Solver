@@ -50,7 +50,7 @@ def parse_maze_string(maze_string):
         end_node = None
         for i in range(1, int(maze_dimensions[0]) + 1):
             for j in range(1, int(maze_dimensions[1]) + 1):
-                maze_object[(i, j)] = decode_room(int(maze_rooms[((i - 1) * int(maze_dimensions[0])) + j - 1]))
+                maze_object[(i, j)] = decode_room(int(maze_rooms[((i - 1) * int(maze_dimensions[1])) + j - 1]))
                 if maze_object[(i, j)]["start"]:
                     start_node = (i,j)
 
@@ -78,9 +78,9 @@ def make_mazes(maze_file_path):
             raise Exception("maze_file_path is not a string!")
         mazes = []
         with open(maze_file_path, "r") as f:
-            for maze_string in f:
+            for idx, maze_string in enumerate(f):
                 try:
-                    print("Loading in maze:\n{}".format(maze_string))
+                    print("Loading in maze #{}:\n{}".format(idx + 1, maze_string))
                     mazes.append(parse_maze_string(maze_string))
                     print("Maze Loaded!\n")
                 except Exception as e:
@@ -121,7 +121,7 @@ def find_shortest_path(maze):
                 current_queue_object["visited"].add(current_queue_object["node"])
             if current_node_object["mine"]:
                 current_queue_object["lives"] -= 1
-            if current_queue_object["lives"] <= 1:
+            if current_queue_object["lives"] <= 0:
                 continue
             if current_node_object["end"]:
                 path = current_queue_object["path"]
@@ -171,7 +171,7 @@ def find_shortest_path(maze):
             path = ["N/A"]
             print("We couldn't find a path through in the map\n")
         else:
-            print("We found a path through in the map with {} lives: {}".format(current_queue_object["lives"], path))
+            print("We found a path through in the map with {} lives: {}\n".format(current_queue_object["lives"], path))
 
         return path
 
@@ -185,9 +185,10 @@ def main():
     file_path = "mazes.txt"
     mazes = make_mazes(file_path)
     shortest_paths = []
-    for maze in mazes:
+    for idx, maze in enumerate(mazes):
+        print("Trying to solve maze #{}:\n".format(idx + 1))
         shortest_paths.append(find_shortest_path(maze))   
-    print(shortest_paths)     
+    print("Output Answer:\n{}".format(shortest_paths))
 
 if __name__ == '__main__':
     main()
